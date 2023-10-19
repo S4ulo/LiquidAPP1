@@ -1,153 +1,119 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Camera } from 'expo-camera';
-import { StyleSheet, Image, Text, View, SafeAreaView, ScrollView, Animated, TouchableOpacity, Modal } from 'react-native';
-import { FontAwesome } from "@expo/vector-icons";
+import { StatusBar } from 'expo-status-bar';
+import React from 'react';
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  TouchableOpacity,
+  Platform,
+  KeyboardAvoidingView,
+  Keyboard,
+  TouchableWithoutFeedback,
+} from 'react-native';
 
 export default function App() {
-  const [scrollY, setScrollY] = useState(new Animated.Value(0));
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const [hasPermission, setHasPermission] = useState(null);
-  const camRef = useRef(null);
-  const [capturedPhoto, setCapturedPhoto] = useState(null);
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
-
-  }, []);
-  if (hasPermission === null) {
-    return <View />;
-  }
-  if (hasPermission === false) {
-    return <Text>Acesso negado! </Text>;
-  }
-  async function takePicture() {
-    if (camRef) {
-      const data = await camRef.current.takePictureAsync();
-      setCapturedPhoto(data.uri);
-      setOpen(true);
-      console.log(data);
-    }
-  }
-
   return (
-    <SafeAreaView>
-      <Animated.View style={[
-        styles.header,
-        {
-          height: scrollY.interpolate({
-            inputRange: [10, 160, 185],
-            outputRange: [140, 20, 0],
-            extrapolate: 'clamp'
-          }),
-          opacity: scrollY.interpolate({
-            inputRange: [1, 75, 170],
-            outputRange: [1, 1, 0],
-            extrapolate: 'clamp'
-          })
-        }
-      ]}>
-        <FontAwesome
-          name="home"
-          size={35}
-          color="white"
-        />
-        <Animated.Image
-          source={require('./src/img/color_transparent.png')}
-          style={{ width: 300, height: 300 }}
-          resizeMode='contain'
-        />
-        <Image
-          source={require('./src/img/color_with_background.jpg')}
-          style={{ width: 35, height: 150 }}
-          resizeMode='contain'
-        />
-      </Animated.View>
-      <ScrollView
-        scrollEventThrottle={16}
-        onScroll={Animated.event([{
-          nativeEvent: {
-            contentOffset: { y: scrollY }
-          },
-        }],
-          { useNativeDriver: false })}
-      >
-        <View style={styles.box}>
-          <Camera
-            style={{ flex: 1 }} 
-            type={type}
-            ref={camRef}
-          >
-            <View style={{ flex: 1, backgroundColor: 'transparent', flexDirection: 'row' }}>
-              <TouchableOpacity
-                style={{
-                  position: 'absolute',
-                  bottom: 20,
-                  left: 20
-                }}
-                onPress={() => {
-                  setType(type === Camera.Constants.Type.back ? Camera.Constants.Type.front : Camera.Constants.Type.back)
-                }}>
-                <Text style={{ fontSize: 20, marginBottom: 13, color: '#fff' }}>Trocar</Text>
-              </TouchableOpacity>
+    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <View style={styles.container}>
+          <StatusBar backgroundColor="#fff" translucent={false} />
+          <Image source={require('./src/img/color_transparent.png')} style={styles.logo} />
+          <TextInput placeholder='Celular, username ou email' style={styles.input} />
+          <TextInput placeholder='Sua senha' style={styles.input} />
 
-              { capturedPhoto &&
-                <Modal animationType='slide' transparent={false} visible={open}>
-                  <View style={{flex:1,justifyContent:'center',alignItems:'center',margin:20}}>
-                  <TouchableOpacity style={{ margin: 10 }} onPress={() => setOpen(false)}>
-                    <FontAwesome name='window-close' size={50} color='#ff0000' />
-                  </TouchableOpacity>
-
-
-                    <Image style={{width:'100%',height:300,borderRadius:20}} source ={{uri:capturedPhoto}} />
-
-
-                  </View>
-                </Modal>
-              }
-            </View>
-          </Camera>
-          <TouchableOpacity style={styles.button} onPress={takePicture}>
-            <FontAwesome name='camera' size={23} color={'black'} />
+          <View style={styles.forgotContainer}>
+            <TouchableOpacity>
+              <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
+            </TouchableOpacity>
+          </View>
+          <TouchableOpacity style={styles.loginButton}>
+            <Text style={styles.loginText}>Acessar</Text>
           </TouchableOpacity>
 
+          <View style={styles.divisor}>
+            <View style={styles.divisorLine}></View>
+            <Text style={{ marginHorizontal: '3%', color:'#c4c4c4' }}> OU</Text>
+            <View style={styles.divisorLine}></View>
+          </View>
+          <View style={styles.signUpContainer}>
+            <Text style={styles.signUpText}>Não possui uma conta?</Text>
+            <TouchableOpacity>
+              <Text style={styles.signUpButton}>Cadastre-se!</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        <View style={styles.box}></View>
-        <View style={styles.box}></View>
-        <View style={styles.box}></View>
-        <View style={styles.box}></View>
-        <View style={styles.box}></View>
-      </ScrollView>
-    </SafeAreaView>
+      </TouchableWithoutFeedback>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  header: {
-    backgroundColor: 'black',
-    flexDirection: 'row',
+  container: {
+    backgroundColor: '#333',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingLeft: 10,
-    paddingRight: 10,
-    borderBottomWidth: 2,
-    borderBottomColor: '#FFF',
+    justifyContent: 'center',
+    paddingBottom: 350
   },
-  box: {
-    height: 300,
-    backgroundColor: '#ddd',
-    margin: 7,
-    borderRadius: 5
+  logo: {
+    width:'110%',
+    height:'20%',
+    paddingTop: '50%',
+    marginTop: Platform.OS === 'android' ? '13%' : '20%',
+    marginBottom: Platform.OS === 'android' ? '13%' : '15%',
   },
-  button: {
+  input: {
+    width: '87%',
+    height: 46,
+    backgroundColor: '#999',
+    marginBottom: 20,
+    padding: 8,
+    borderRadius: 5,
+  },
+  forgotContainer: {
+    width: '90%',
+    alignItems: 'flex-end',
+  },
+  forgotText: {
+    color: '#8a08bb',
+  },
+  loginButton: {
+    marginTop: '5%',
+    backgroundColor: '#8a08bb',
+    width: '87%',
+    height: 46,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#121212',
-    margin: 20,
-    borderRadius: 10,
-    height: 50
-  }
+    borderRadius: 5,
+  },
+  loginText: {
+    color: '#fff',
+    fontSize: 17,
+  },
+  divisor: {
+    flexDirection: 'row',
+    marginTop: '10%',
+    width: '87%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  divisorLine: {
+    width: '45%',
+    height: 1,
+    backgroundColor: '#c4c4c4',
+    borderRadius: 5,
+  },
+  signUpContainer: {
+    flexDirection: 'row',
+    marginTop: '10%',
+  },
+  signUpText: {
+    color: '#c4c4c4',
+    paddingRight: 5,
+  },
+  signUpButton: {
+    color: '#8a08bb',
+    fontWeight: 'bold'
+  },
 });
