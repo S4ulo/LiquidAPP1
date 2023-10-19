@@ -1,3 +1,4 @@
+import { Checkbox } from 'expo-checkbox';
 import { StatusBar } from 'expo-status-bar';
 import React, { useState } from 'react';
 import {
@@ -26,10 +27,10 @@ export default function App() {
           <TextInput placeholder='Email' style={styles.input} />
           <TextInput placeholder='Senha' style={styles.input} />
           <View style={styles.labelCheckbox}>
-            {/* <CheckBox
+            <Checkbox
               value={isMaiorIdade}
               onValueChange={(newValue) => setIsMaiorIdade(newValue)}
-            /> */}
+            />
             <Text style={styles.checkboxText}>Declaro que sou maior de 18 anos.</Text>
           </View>
           <TouchableOpacity style={styles.loginButton}>
