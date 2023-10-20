@@ -1,5 +1,5 @@
 # Segunda Fase SA
- Projeto S.A 2 fase
+ Projeto S.A 2 fase rede social de drinks Liquid
 
  instalar 
  npm install react-native-gifted-chat --save
