@@ -42,7 +42,7 @@ export default function Profile() {
     <SafeAreaView style={styles.container}>
       <Animated.View style={styles.header}>
         <Animated.Image
-          source={require('./src/assets/color_transparent_name_png.png')}
+          source={require('./src/img/color_transparent.png')}
           style={styles.logo}
         />
         <View style={styles.icons}>

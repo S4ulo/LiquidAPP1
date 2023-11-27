@@ -1,119 +1,196 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet,
-  Text,
   View,
-  Image,
-  TextInput,
-  TouchableOpacity,
-  Platform,
   KeyboardAvoidingView,
-  Keyboard,
-  TouchableWithoutFeedback,
+  ImageBackground,
+  TouchableOpacity,
+  Text,
+  TextInput,
+  StyleSheet,
 } from 'react-native';
 
-export default function App() {
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+
+// Sua tela de perfil (ProfileScreen)
+import ProfileScreen from './AppNoticias';
+
+// Criando o Stack Navigator
+const Stack = createStackNavigator();
+
+// Componente para a tela de login
+function LoginScreen({ navigation }) {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+
+  const isSignUp = name !== '';
+
+  const handleSignIn = () => {
+    if (email && password && isSignUp) {
+      setMessage('Login Efetuado com Sucesso');
+      clearInputs();
+      navigation.navigate('Profile');
+    } else {
+      setMessage('Por favor, corrija os dados ou crie uma conta');
+    }
+  };
+
+  const handleSignUp = () => {
+    if (name && isValidEmail(email) && password) {
+      setMessage('Conta Criada com Sucesso');
+      clearInputs();
+      console.log('Dados do cadastro:', { name, email, password });
+    } else {
+      setMessage('Por favor, corrija os dados');
+    }
+  };
+
+  const isValidEmail = (email) => {
+    return /\S+@\S+\.\S+/.test(email);
+  };
+
+  const clearInputs = () => {
+    setName('');
+    setEmail('');
+    setPassword('');
+  };
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <View style={styles.container}>
-          <StatusBar backgroundColor="#fff" translucent={false} />
-          <Image source={require('./src/img/color_transparent.png')} style={styles.logo} />
-          <TextInput placeholder='Celular, username ou email' style={styles.input} />
-          <TextInput placeholder='Sua senha' style={styles.input} />
+    <KeyboardAvoidingView style={styles.background} behavior="padding">
+      <ImageBackground
+        style={styles.titleImage}
+        source={require('./src/img/LOGO.PNG')}
+        resizeMode="contain"
+      >
+        <View style={styles.overlay}>
+          <View style={styles.formContainer}>
+            {/* Adicionado TextInput para o campo de nome */}
+            <TextInput
+              style={styles.input}
+              onChangeText={(text) => setName(text)}
+              value={name}
+              placeholderTextColor="#000000"
+              placeholder="Name"
+              autoCorrect={false}
+            />
 
-          <View style={styles.forgotContainer}>
-            <TouchableOpacity>
-              <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
-            </TouchableOpacity>
-          </View>
-          <TouchableOpacity style={styles.loginButton}>
-            <Text style={styles.loginText}>Acessar</Text>
-          </TouchableOpacity>
+            <TextInput
+              style={[styles.input, email === '' && styles.errorInput]}
+              onChangeText={(text) => setEmail(text)}
+              value={email}
+              placeholderTextColor="#000000"
+              placeholder="Email"
+              autoCorrect={false}
+              keyboardType="email-address"
+            />
 
-          <View style={styles.divisor}>
-            <View style={styles.divisorLine}></View>
-            <Text style={{ marginHorizontal: '3%', color:'#c4c4c4' }}> OU</Text>
-            <View style={styles.divisorLine}></View>
-          </View>
-          <View style={styles.signUpContainer}>
-            <Text style={styles.signUpText}>Não possui uma conta?</Text>
-            <TouchableOpacity>
-              <Text style={styles.signUpButton}>Cadastre-se!</Text>
+            <TextInput
+              style={[styles.input, password === '' && styles.errorInput]}
+              onChangeText={(text) => setPassword(text)}
+              value={password}
+              placeholderTextColor="#000000"
+              placeholder="Password"
+              autoCorrect={false}
+              secureTextEntry={true}
+            />
+
+            <TouchableOpacity style={styles.buttonLogin} onPress={handleSignIn}>
+              <Text style={styles.buttonText}> Acessar </Text>
             </TouchableOpacity>
+
+            <TouchableOpacity style={styles.buttonSignup} onPress={handleSignUp}>
+              <Text style={styles.buttonText}>
+                {isSignUp ? 'Criar conta' : 'Registre-se'}
+              </Text>
+            </TouchableOpacity>
+
+            {message !== '' && <Text style={styles.messageText}>{message}</Text>}
           </View>
         </View>
-      </TouchableWithoutFeedback>
+      </ImageBackground>
     </KeyboardAvoidingView>
   );
 }
 
+
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#333',
+  background: {
+    flex: 1,
     alignItems: 'center',
-    justifyContent: 'center',
-    paddingBottom: 350
+    justifyContent: 'flex-start',
+    backgroundColor: '#2E2E2E',
   },
-  logo: {
-    width:'110%',
-    height:'20%',
-    paddingTop: '50%',
-    marginTop: Platform.OS === 'android' ? '13%' : '20%',
-    marginBottom: Platform.OS === 'android' ? '13%' : '15%',
+  titleImage: {
+    flex: 1,
+    width: '100%',
+    marginBottom: 200,
+    marginTop: -180,
+  },
+  overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.0)',
+  },
+  formContainer: {
+    marginTop: 750,
+    alignItems: 'center',
+    marginBottom: 20,
   },
   input: {
-    width: '87%',
-    height: 46,
-    backgroundColor: '#999',
-    marginBottom: 20,
-    padding: 8,
-    borderRadius: 5,
+    width: '70%',
+    height: 30,
+    backgroundColor: '#FFFFFF',
+    marginBottom: 10,
+    color: '#000000',
+    paddingHorizontal: 10,
+    borderRadius: 8,
   },
-  forgotContainer: {
-    width: '90%',
-    alignItems: 'flex-end',
-  },
-  forgotText: {
-    color: '#8a08bb',
-  },
-  loginButton: {
-    marginTop: '5%',
-    backgroundColor: '#8a08bb',
-    width: '87%',
-    height: 46,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 5,
-  },
-  loginText: {
-    color: '#fff',
-    fontSize: 17,
-  },
-  divisor: {
-    flexDirection: 'row',
-    marginTop: '10%',
-    width: '87%',
-    alignItems: 'center',
+  buttonLogin: {
+    backgroundColor: '#8908bb',
+    height: 30,
+    width: '70%',
+    borderRadius: 8,
+    marginTop: 0,
     justifyContent: 'center',
   },
-  divisorLine: {
-    width: '45%',
-    height: 1,
-    backgroundColor: '#c4c4c4',
-    borderRadius: 5,
+  buttonSignup: {
+    backgroundColor: 'transparent',
+    height: 30,
+    width: 100,
+    borderRadius: 8,
+    marginTop: 15,
   },
-  signUpContainer: {
-    flexDirection: 'row',
-    marginTop: '10%',
+  buttonText: {
+    color: '#FFFFFF',
+    textAlign: 'center',
+    backgroundColor: 'transparent',
+    fontSize: 15,
+    marginTop: -5,
   },
-  signUpText: {
-    color: '#c4c4c4',
-    paddingRight: 5,
+  errorInput: {
+    borderColor: '#DBA901',
   },
-  signUpButton: {
-    color: '#8a08bb',
-    fontWeight: 'bold'
+  labelError: {
+    alignSelf: 'center',
+    color: '#FF0000',
+    marginBottom: 8,
+  },
+  messageText: {
+    marginTop: 10,
+    color: '#848484',
+    fontSize: 15,
   },
 });
+
+function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="Login">
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+export default App;
