@@ -12,43 +12,40 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
-// Sua tela de perfil (ProfileScreen)
 import ProfileScreen from './AppNoticias';
 
-// Criando o Stack Navigator
 const Stack = createStackNavigator();
 
-// Componente para a tela de login
 function LoginScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
+  const [isRegistered, setIsRegistered] = useState(false);
 
-  const isSignUp = name !== '';
+  const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+  const isValidPassword = (password) => password.length >= 4;
 
   const handleSignIn = () => {
-    if (email && password && isSignUp) {
-      setMessage('Login Efetuado com Sucesso');
-      clearInputs();
-      navigation.navigate('Profile');
+    if (!isRegistered) {
+      setMessage('Por favor, cadastre-se primeiro.');
+    } else if (!isValidEmail(email) || !isValidPassword(password)) {
+      setMessage('Corrija os dados por favor.');
     } else {
-      setMessage('Por favor, corrija os dados ou crie uma conta');
+      setMessage('Login Efetuado com Sucesso');
+      navigation.navigate('Profile');
     }
   };
 
   const handleSignUp = () => {
-    if (name && isValidEmail(email) && password) {
-      setMessage('Conta Criada com Sucesso');
+    if (!isValidEmail(email) || !isValidPassword(password)) {
+      setMessage('Corrija os dados por favor.');
+    } else {
+      setMessage('Cadastro Criado com Sucesso');
+      setIsRegistered(true);
       clearInputs();
       console.log('Dados do cadastro:', { name, email, password });
-    } else {
-      setMessage('Por favor, corrija os dados');
     }
-  };
-
-  const isValidEmail = (email) => {
-    return /\S+@\S+\.\S+/.test(email);
   };
 
   const clearInputs = () => {
@@ -56,6 +53,7 @@ function LoginScreen({ navigation }) {
     setEmail('');
     setPassword('');
   };
+
   return (
     <KeyboardAvoidingView style={styles.background} behavior="padding">
       <ImageBackground
@@ -65,7 +63,6 @@ function LoginScreen({ navigation }) {
       >
         <View style={styles.overlay}>
           <View style={styles.formContainer}>
-            {/* Adicionado TextInput para o campo de nome */}
             <TextInput
               style={styles.input}
               onChangeText={(text) => setName(text)}
@@ -76,7 +73,7 @@ function LoginScreen({ navigation }) {
             />
 
             <TextInput
-              style={[styles.input, email === '' && styles.errorInput]}
+              style={styles.input}
               onChangeText={(text) => setEmail(text)}
               value={email}
               placeholderTextColor="#000000"
@@ -86,7 +83,7 @@ function LoginScreen({ navigation }) {
             />
 
             <TextInput
-              style={[styles.input, password === '' && styles.errorInput]}
+              style={styles.input}
               onChangeText={(text) => setPassword(text)}
               value={password}
               placeholderTextColor="#000000"
@@ -100,9 +97,7 @@ function LoginScreen({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity style={styles.buttonSignup} onPress={handleSignUp}>
-              <Text style={styles.buttonText}>
-                {isSignUp ? 'Criar conta' : 'Registre-se'}
-              </Text>
+              <Text style={styles.buttonText}> Cadastrar-se </Text>
             </TouchableOpacity>
 
             {message !== '' && <Text style={styles.messageText}>{message}</Text>}
@@ -112,6 +107,7 @@ function LoginScreen({ navigation }) {
     </KeyboardAvoidingView>
   );
 }
+
 
 
 const styles = StyleSheet.create({
@@ -167,14 +163,6 @@ const styles = StyleSheet.create({
     fontSize: 15,
     marginTop: -5,
   },
-  errorInput: {
-    borderColor: '#DBA901',
-  },
-  labelError: {
-    alignSelf: 'center',
-    color: '#FF0000',
-    marginBottom: 8,
-  },
   messageText: {
     marginTop: 10,
     color: '#848484',
@@ -182,12 +170,13 @@ const styles = StyleSheet.create({
   },
 });
 
+
 function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Login">
-        <Stack.Screen name="Login" component={LoginScreen} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
+      <Stack.Navigator headerMode='none'>
+        <Stack.Screen name="Login" component={LoginScreen} options={{ headerShown: false }}  />
+        <Stack.Screen name="Profile" component={ProfileScreen} options={{ headerShown: false }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
-import { StyleSheet, Image, Text, View, SafeAreaView, ScrollView, Animated } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { StyleSheet, Text, View, SafeAreaView, ScrollView, Image } from 'react-native';
+import LogoFinal from './src/img/LogoFinalPeq.gif';
 
 export default function Profile() {
-  const [scrollY] = useState(new Animated.Value(0));
-
   const noticias = [
     {
       title: 'AS MARCAS DE GIN MAIS VENDIDAS EM 2022',
@@ -38,64 +36,51 @@ export default function Profile() {
     },
   ];
 
+ 
   return (
-    <SafeAreaView style={styles.container}>
-      <Animated.View style={styles.header}>
-        <Animated.Image
-          source={require('./src/img/color_transparent.png')}
-          style={styles.logo}
-        />
-        <View style={styles.icons}>
-          <Ionicons name="store" size={30} color={'#8a08bb'} />
-          <Ionicons name="wine-outline" size={30} color={'#8a08bb'} />
-          <Ionicons name="notifications-outline" size={30} color={'#8a08bb'} />
-        </View>
-      </Animated.View>
-      <ScrollView
-        scrollEventThrottle={16}
-        onScroll={Animated.event([
-          {
-            nativeEvent: {
-              contentOffset: { y: scrollY },
-            },
-          },
-        ])}
-      >
-        {noticias.map((noticia, index) => (
-          <View key={index} style={styles.newsContainer}>
-            <Image source={{ uri: noticia.imageSource }} style={styles.newsImage} />
-            <Text style={styles.newsTitle}>{noticia.title}</Text>
-            <Text style={styles.newsDescription}>{noticia.description}</Text>
+    <View style={styles.container}>
+      <Image
+        source={LogoFinal} // Referencie a imagem importada diretamente
+        style={styles.logo}
+      />
+      <SafeAreaView style={styles.safeArea}>
+        <ScrollView>
+          <View style={styles.newsContainer}>
+            {noticias.map((noticia, index) => (
+              <View key={index} style={styles.newsItem}>
+                <Image source={{ uri: noticia.imageSource }} style={styles.newsImage} />
+                <Text style={styles.newsTitle}>{noticia.title}</Text>
+                <Text style={styles.newsDescription}>{noticia.description}</Text>
+              </View>
+            ))}
           </View>
-        ))}
-      </ScrollView>
-    </SafeAreaView>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#333',
-  },
-  header: {
-    backgroundColor: '#333',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: -50,
-    marginBottom: -30,
-    paddingRight: 30,
+    flex: 1,
+    backgroundColor: '#000000',
   },
   logo: {
-    width: 180,
-    height: 180,
+    position: 'absolute',
+    top: 0,
+    width: '100%', 
+    height: 100, 
+    zIndex: 1,
   },
-  icons: {
-    flexDirection: 'row',
-    gap: 10,
+  safeArea: {
+    flex: 1,
+    marginTop: 100, // Ajuste a margem superior para corresponder à altura do GIF
   },
   newsContainer: {
-    backgroundColor: '#ddd',
+    backgroundColor: '#333',
+  },
+  newsItem: {
+    backgroundColor: '#333',
     margin: 7,
     borderRadius: 5,
     padding: 10,
